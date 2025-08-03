@@ -3,6 +3,14 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
+    def __str__(self):
+        return f"{self.name}"
+    class Meta:
+        db_table = "task_manager_category"
+        verbose_name = "Category"
+        constraints = [
+            models.UniqueConstraint(fields=['name'], name='unique_category_name')
+        ]
 
 
 class Task(models.Model):
@@ -19,16 +27,31 @@ class Task(models.Model):
     status = models.CharField(choices=STATUS_CHOICES)
     deadline= models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
-    class Meta:
-        unique_together = ('title', 'created_at')
-
     def __str__(self):
-        return f"{self.title} ({self.created_at})"
+        return f"{self.title}"
+
+    class Meta:
+        db_table = "task_manager_task"
+        ordering = ["-created_at"]
+        verbose_name = "Task"
+        constraints = [
+            models.UniqueConstraint(fields=['title'], name='unique_task_title')
+        ]
+
 
 class SubTask(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='subtasks')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='subtask')
     status = models.CharField(choices=Task.STATUS_CHOICES)
     deadline = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.title}"
+    class Meta:
+        db_table = 'task_manager_subtask'
+        ordering = ["-created_at"]
+        verbose_name = "SubTask"
+        constraints = [
+            models.UniqueConstraint(fields=['title'], name='unique_subtask_title')
+        ]
