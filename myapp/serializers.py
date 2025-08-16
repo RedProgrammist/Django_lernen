@@ -1,4 +1,4 @@
-from datetime import timezone
+from django.utils import timezone
 
 from rest_framework import serializers
 
@@ -42,12 +42,12 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TaskCreateSerializer(serializers.ModelSerializer):
-    def validate_deadline(value):
-        if value < timezone.now():
-            raise serializers.ValidationError("Es ist yu fruh")
-    deadline = serializers.DateTimeField(validators=[validate_deadline])
+
     class Meta:
         model = Task
         fields = '__all__'
-
+    def validate_deadline(self, value):
+        if value < timezone.now():
+            raise serializers.ValidationError("Es ist yu fruh")
+        return value
 
