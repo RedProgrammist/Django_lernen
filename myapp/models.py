@@ -62,3 +62,4 @@ class SubTask(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['title'], name='unique_subtask_title')
         ]
+

@@ -22,7 +22,7 @@ from myapp.serializers import TaskCreateSerializer, TaskDetailSerializer, SubTas
 # Create your views here.
 
 def hello_world(request):
-    return HttpResponse("<h1>Hello, world!</h1>")
+    return HttpResponse("<h1>Hello, world!!!</h1>")
 
 @api_view(['POST'])
 def task_create(request):
