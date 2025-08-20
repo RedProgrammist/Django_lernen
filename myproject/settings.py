@@ -109,7 +109,8 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'rest_framework.filters.SearchFilter',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'myapp.pagination.MyCursorPagination',
 }
 
 # Локализация
@@ -128,3 +129,61 @@ STATICFILES_DIRS = [BASE_DIR / "static"]  # если есть папка static
 # Медиа (если нужно загружать файлы)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)  # создаём папку logs, если её нет
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{levelname}] {asctime} {name} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname}: {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        # 1) Вывод в консоль
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'simple',
+        },
+        # 2) HTTP-запросы → logs/http_logs.log
+        'http_file': {
+            'class': 'logging.FileHandler',
+            'level': 'INFO',
+            'formatter': 'verbose',
+            'filename': os.path.join(LOG_DIR, 'http_logs.log'),
+        },
+        # 3) SQL-запросы → logs/db_logs.log
+        'db_file': {
+            'class': 'logging.FileHandler',
+            'level': 'DEBUG',
+            'formatter': 'verbose',
+            'filename': os.path.join(LOG_DIR, 'db_logs.log'),
+        },
+    },
+
+    'loggers': {
+        # Логи работы сервера (runserver)
+        'django.server': {
+            'handlers': ['console', 'http_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # Логи SQL-запросов
+        'django.db.backends': {
+            'handlers': ['db_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+}
