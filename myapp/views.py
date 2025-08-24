@@ -12,11 +12,14 @@ from rest_framework.response import Response
 from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from myapp import serializers
 from myapp.models import Task, SubTask, Category
 from myapp.serializers import TaskCreateSerializer, TaskDetailSerializer, SubTaskCreateSerializer, \
     CategoryCreateSerializer
+from rest_framework.authentication import BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
 # Create your views here.
@@ -62,6 +65,7 @@ def tasks_stat(request):
 
 
 class TaskListCreateView(ListCreateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
     filter_backends = [SearchFilter]
@@ -85,6 +89,7 @@ class TaskListCreateView(ListCreateAPIView):
             return TaskCreateSerializer
         return TaskDetailSerializer
 class TaskDetailUpdateDeleteView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Task.objects.all()
     serializer_class = TaskDetailSerializer
 
@@ -134,4 +139,10 @@ class CategoryViewSet(ModelViewSet):
         category = self.get_object()
         count = category.task.count()
         return Response({'category': category.name, 'task_count': count})
+
+class JWTView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        return Response({"message": "Hello, ", "user": request.user.username})
 

@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 
@@ -111,8 +112,15 @@ REST_FRAMEWORK = {
         'rest_framework.filters.SearchFilter',
     ],
     'DEFAULT_PAGINATION_CLASS': 'myapp.pagination.MyCursorPagination',
-}
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+                                  'rest_framework_simplejwt.authentication.JWTAuthentication',],
 
+}
+from datetime import timedelta
+SIMPLE_JWT = {
+ 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+ 'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
 # Локализация
 LANGUAGE_CODE = 'ru-ru'  # или 'en-us'
 

@@ -19,14 +19,21 @@ from django.urls import *
 from rest_framework.routers import DefaultRouter
 
 from myapp import views
-from myapp.views import hello_world
+from myapp.views import hello_world, JWTView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
 router.register(r'category', views.CategoryViewSet)
 
+
+
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('hello/', hello_world, name='hello_world'),
+    path('', JWTView.as_view(), name='JWT'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('', hello_world, name='home'),
     path('tasks/create/', views.task_create, name='create_task'),
     path('tasks/alltasks/', views.tasks_list, name='tasks_list'),
